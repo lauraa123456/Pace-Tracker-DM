@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part Pace Tracker</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #ffffff;
+      --input-bg: #1f1f1f;
+      --button-bg: #333333;
+      --button-text: #ffffff;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .screen.active {
+      display: flex;
+    }
+    input, button {
+      font-size: 1.5rem;
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+    button {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+    }
+    h1 {
+      font-size: 3rem;
+      margin: 20px 0 10px;
+    }
+    .sub {
+      font-size: 2rem;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="setupScreen" class="screen active">
+    <h1>Set Up</h1>
+    <label>
+      Time per part (seconds):<br/>
+      <input id="timePerPart" type="number" min="1" />
+    </label>
+    <label>
+      Total parts to assemble:<br/>
+      <input id="totalParts" type="number" min="1" />
+    </label>
+    <button onclick="startTracker()">Start</button>
+  </div>
+
+  <div id="trackerScreen" class="screen">
+    <h1 id="elapsed">00:00</h1>
+    <div class="sub">
+      Expected Parts: <span id="expectedParts">0</span>
+    </div>
+    <div class="controls">
+      <button onclick="stopTracker()">Stop</button>
+      <button onclick="resetTracker()">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    let timePerPart = 0;
+    let totalParts = 0;
+    let startTime = null;
+    let timerInterval = null;
+
+    function startTracker() {
+      timePerPart = parseFloat(document.getElementById("timePerPart").value);
+      totalParts = parseInt(document.getElementById("totalParts").value);
+
+      if (!timePerPart || !totalParts) {
+        alert("Please enter valid numbers for both fields.");
+        return;
+      }
+
+      document.getElementById("setupScreen").classList.remove("active");
+      document.getElementById("trackerScreen").classList.add("active");
+
+      startTime = Date.now();
+      updateTimer();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - startTime) / 1000);
+      const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+      const seconds = String(elapsedSeconds % 60).padStart(2, '0');
+      document.getElementById("elapsed").innerText = `${minutes}:${seconds}`;
+
+      const expected = Math.floor(elapsedSeconds / timePerPart);
+      document.getElementById("expectedParts").innerText = expected;
+    }
+
+    function stopTracker() {
+      clearInterval(timerInterval);
+    }
+
+    function resetTracker() {
+      clearInterval(timerInterval);
+      document.getElementById("trackerScreen").classList.remove("active");
+      document.getElementById("setupScreen").classList.add("active");
+      document.getElementById("elapsed").innerText = "00:00";
+      document.getElementById("expectedParts").innerText = "0";
+    }
+  </script>
+</body>
+</html>
