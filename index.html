@@ -68,10 +68,9 @@
     <button onclick="startTracker(true)">Start</button>
   </div>
 
-  <div id="trackerScreen" class="screen">
-    <h1 id="elapsed">00:00</h1>
+  $1
     <div class="sub">
-      Expected Cycles: <span id="expectedCycles">0</span>
+      Total Estimated Time: <span id="totalEstimate">00:00</span>
     </div>
     <div class="controls">
       <button onclick="startTracker(false)">Start</button>
@@ -92,6 +91,11 @@
       startButton.disabled = true;
 
       if (isInitial) {
+        // Calculate and display total estimated time
+        const totalTimeSeconds = timePerCycle * totalCycles;
+        const totalMinutes = String(Math.floor(totalTimeSeconds / 60)).padStart(2, '0');
+        const totalSeconds = String(totalTimeSeconds % 60).padStart(2, '0');
+        document.getElementById("totalEstimate").innerText = `${totalMinutes}:${totalSeconds}`;
         timePerCycle = parseFloat(document.getElementById("timePerCycle").value);
         totalCycles = parseInt(document.getElementById("totalCycles").value);
 
@@ -140,6 +144,7 @@
       document.getElementById("setupScreen").classList.add("active");
       document.getElementById("elapsed").innerText = "00:00";
       document.getElementById("expectedCycles").innerText = "0";
+      document.getElementById("totalEstimate").innerText = "00:00";
       const startButton = document.querySelector('#trackerScreen .controls button[onclick*="startTracker"]');
       startButton.disabled = false;
     }
